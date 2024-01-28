@@ -48,9 +48,9 @@ public class DataSource {
     }
 
     public JSONObject createUser(String login, String password) throws SQLException {
-        String sql = "INSERT INTO users (login, userPasswords, diamond, gold) VALUES ('" + login + "', '" + password + "',100,100)";
-        Statement preparedStatement = connection.createStatement();
-        preparedStatement.executeUpdate(sql);
+        String sql = "INSERT INTO users (login, userPassword, diamond, gold) VALUES ('l', 'jjjdksl',100, 100);";
+        Statement statement = connection.createStatement();
+        statement.executeUpdate(sql);
         return new JsonRequest(new JSONObject()).createUser(100,100);
     }
     public void update(String login, String password, int countGold, int countDiamond) throws SQLException {

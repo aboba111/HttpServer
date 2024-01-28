@@ -15,8 +15,10 @@ import java.util.Scanner;
 
 
 public class Main {
+
     private static void createUser(HttpExchange exchange, DataSource source) throws IOException, SQLException {
         if (exchange.getRequestMethod().equals("POST")) {
+            System.out.println("hello228");
             InputStream inputStream = exchange.getRequestBody();
 
             // Преобразование InputStream в строку
@@ -49,6 +51,8 @@ public class Main {
 
         }
     }
+
+
 
     private static void hello(HttpExchange exchange, DataSource source) throws IOException, SQLException {
 
@@ -116,6 +120,8 @@ public class Main {
         }
 
 
+
+
     public static void main(String[] args) throws IOException, SQLException {
 
         HttpServer server;
@@ -132,6 +138,7 @@ public class Main {
             }
 
         });
+
         server.createContext("/update", exchange -> {
             try {
                 update(exchange, source);
@@ -140,6 +147,9 @@ public class Main {
             }
 
         });
+
+
+
         server.createContext("/create", exchange -> {
             try {
                 createUser(exchange, source);
@@ -148,6 +158,7 @@ public class Main {
             }
 
         });
+
 
         server.start();
     }
