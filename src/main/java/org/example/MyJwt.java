@@ -26,7 +26,7 @@ public class MyJwt {
                 .setSubject("user")
                 .setId(UUID.randomUUID().toString())
                 .setIssuedAt(Date.from(now))
-                .setExpiration(Date.from(now.plus(5l, ChronoUnit.MINUTES)))
+                .setExpiration(Date.from(now.plus(2l, ChronoUnit.MINUTES)))
                 .signWith(hmacKey)
                 .compact();
 
@@ -43,7 +43,8 @@ public class MyJwt {
                     .setSigningKey(hmacKey)
                     .build()
                     .parseClaimsJws(token);
-        } catch (SignatureException | ExpiredJwtException | UnsupportedJwtException  e){
+        } catch (SignatureException | ExpiredJwtException | UnsupportedJwtException | MalformedJwtException | IllegalArgumentException e){
+            jwt=null;
 
         }
         return jwt;
