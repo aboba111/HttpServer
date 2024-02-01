@@ -11,14 +11,16 @@ public class JsonRequest {
 
     }
 
-    public JSONObject authSuccess(int countDiamonds, int countGold){
+    public JSONObject authSuccess(int countDiamonds, int countGold, String token){
         object.put("request",1);
+        object.put("token", token);
         object.put("diamond",countDiamonds);
         object.put("gold",countGold);
         return object;
     }
-    public JSONObject createUser(int countDiamonds, int countGold){
+    public JSONObject createUser(int countDiamonds, int countGold, String token){
         object.put("request",1);
+        object.put("token", token);
         object.put("diamond",countDiamonds);
         object.put("gold",countGold);
         return object;
@@ -26,8 +28,10 @@ public class JsonRequest {
 
     public JSONObject authError(){
         object.put("request",-1);
+        object.put("token", "");
         object.put("diamond",0);
         object.put("gold",0);
         return object;
     }
+
 }

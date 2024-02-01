@@ -5,6 +5,7 @@ import com.sun.net.httpserver.HttpServer;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
+import org.mindrot.jbcrypt.BCrypt;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -16,9 +17,9 @@ import java.util.Scanner;
 
 public class Main {
 
+
     private static void createUser(HttpExchange exchange, DataSource source) throws IOException, SQLException {
         if (exchange.getRequestMethod().equals("POST")) {
-            System.out.println("hello228");
             InputStream inputStream = exchange.getRequestBody();
 
             // Преобразование InputStream в строку
@@ -35,8 +36,10 @@ public class Main {
             String login = (String) j.get("login");
             String password = (String) j.get("password");
 
+            System.out.println("hello2209");
             JsonRequest jsonAns=new JsonRequest(new JSONObject());
             JSONObject json = source.createUser(login,password);
+            System.out.println("hello2209");
             String jsonstr = json.toJSONString();
             byte[] mass = jsonstr.getBytes(StandardCharsets.UTF_8);
             System.out.println(jsonstr);
@@ -44,6 +47,7 @@ public class Main {
             exchange.sendResponseHeaders(200, mass.length);
 
             exchange.getResponseBody().write(mass);
+            exchange.close();
 
 
             System.out.println(login + " " + password);
@@ -53,15 +57,16 @@ public class Main {
     }
 
 
-
     private static void hello(HttpExchange exchange, DataSource source) throws IOException, SQLException {
-
         if (exchange.getRequestMethod().equals("POST")) {
+            System.out.println("Post");
             System.out.println("hello");
+
             InputStream inputStream = exchange.getRequestBody();
 
             // Преобразование InputStream в строку
             String result = new Scanner(inputStream, "UTF-8").useDelimiter("\\A").next();
+            System.out.println(result);
             Object o = null;
             try {
                 o = new JSONParser().parse(result);
@@ -76,16 +81,65 @@ public class Main {
             JsonRequest jsonAns = new JsonRequest(new JSONObject());
             JSONObject json = source.auth(login, password);
             String jsonstr = json.toJSONString();
+
+
+
+           // String jsonstr="{\"password\":\"password\",\"login\":\"login\"}";
+
             byte[] mass = jsonstr.getBytes(StandardCharsets.UTF_8);
             System.out.println(jsonstr);
-            exchange.getResponseHeaders().add("Content-Type", "application/json");
             exchange.sendResponseHeaders(200, mass.length);
+            exchange.getResponseHeaders().add("Content-Type", "application/json");
 
             exchange.getResponseBody().write(mass);
+            exchange.close();
+
+
 
 
             System.out.println(login + " " + password);
 
+
+        }
+    }
+    private static void  tokenAuth(HttpExchange exchange, DataSource source) throws IOException, SQLException{
+        if (exchange.getRequestMethod().equals("POST")) {
+            System.out.println("Post1");
+            System.out.println("hello");
+
+            InputStream inputStream = exchange.getRequestBody();
+
+            // Преобразование InputStream в строку
+            String result = new Scanner(inputStream, "UTF-8").useDelimiter("\\A").next();
+
+            System.out.println(result+"333");
+            Object o = null;
+            try {
+                o = new JSONParser().parse(result);
+            } catch (ParseException e) {
+                throw new RuntimeException(e);
+            }
+
+            JSONObject j = (JSONObject) o;
+            System.out.println("3123");
+
+            String token = (String) j.get("token");
+            System.out.println(token);
+
+            JSONObject json = source.auth(token);
+            String jsonstr = json.toJSONString();
+            System.out.println("76543");
+
+
+            // String jsonstr="{\"password\":\"password\",\"login\":\"login\"}";
+
+            byte[] mass = jsonstr.getBytes(StandardCharsets.UTF_8);
+            System.out.println(jsonstr);
+            exchange.sendResponseHeaders(200, mass.length);
+            exchange.getResponseHeaders().add("Content-Type", "application/json");
+
+            exchange.getResponseBody().write(mass);
+            exchange.close();
 
         }
     }
@@ -129,6 +183,12 @@ public class Main {
         server = HttpServer.create();
         server.bind(new InetSocketAddress(port), 10000);
         DataSource source = DataSource.getInstance();
+        /*
+        source.auth(MyJwt.getJwt("heeelp", "wwwo"));
+        String hashedPassword = BCrypt.hashpw("rfhjy", BCrypt.gensalt());
+        System.out.println(hashedPassword.length());
+
+         */
 
         server.createContext("/api", exchange -> {
             try {
@@ -158,8 +218,15 @@ public class Main {
             }
 
         });
+        server.createContext("/tokenAuth", exchange -> {
+            try {
+                tokenAuth(exchange, source);
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
+            }
 
-
+        });
         server.start();
+
     }
 }
